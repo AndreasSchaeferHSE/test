@@ -1,0 +1,33 @@
+
+<style type="text/css">
+    ::placeholder {
+        font-style: italic;
+    }
+</style>
+
+{% if error_message %} {{ error_message }} {% endif %}
+
+<h1>{{ question.question_text }}</h1>
+
+<ul>
+{% for choice in question.choice_set.all %}
+    <li>{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}</li>
+{% endfor %}
+</ul>
+
+<a href="{% url 'polls:detail' question.id %}">Vote again?</a>
+
+<br/><br/><br/>
+<form action="{% url 'polls:post_comment' question.id %}" method="POST">
+    {% csrf_token %}
+    Name: <input type="text" name="username" placeholder="(optional)"> <br/>
+    <textarea rows="4" cols="50" name="comment_text"></textarea><br/>
+    <input type="submit" value="Comment">
+</form>
+
+{% for comment in question.comment_set.all|dictsortreversed:"pub_date" %}
+    <strong>{{ comment.poster_name }}</strong>, commented {{ comment.pub_date }} <br/>
+    <p>
+        {{ comment.comment_text }}
+    </p><br/>
+{% endfor %}
